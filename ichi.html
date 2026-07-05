@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一期一会</title>
+    <link rel="icon" type="image/svg+xml" href="resimler/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #050505; }
+        .noise-bg {
+            position: fixed; inset: 0; z-index: 0; opacity: 0.03; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .fade-in { animation: fadeIn 2s ease-in forwards; opacity: 0; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        ::-webkit-scrollbar { width: 0px; }
+    </style>
+</head>
+<body class="text-zinc-400 font-serif antialiased min-h-screen flex flex-col items-center justify-start pt-24 pb-12 px-6 relative overflow-x-hidden selection:bg-zinc-800 selection:text-zinc-200">
+
+    <div class="noise-bg"></div>
+
+    <div class="max-w-2xl w-full z-10 flex flex-col gap-16 relative">
+        
+        <div class="text-center space-y-6 fade-in" style="animation-delay: 0.2s;">
+            <h1 class="text-4xl md:text-5xl text-zinc-200 font-light tracking-widest">一期一会</h1>
+            <p class="text-xs font-mono tracking-widest text-zinc-500 uppercase">Ichi-go Ichi-e</p>
+            <div class="h-px w-12 bg-zinc-800 mx-auto"></div>
+            
+            <div class="space-y-6 px-4">
+                <p class="text-sm md:text-base leading-relaxed font-light text-zinc-400">
+                    <strong class="text-zinc-300 font-normal">Anlamı:</strong> Japon Zen felsefesinden gelen bu kavram, "bir ömürde bir kez, bir daha asla" demektir. Yaşadığımız her anın, karşılaştığımız her durumun eşsiz olduğunu yardımıyla evrenin sonuna kadar bir daha asla aynı koşullarla tekrarlanmayacağını hatırlatır.
+                </p>
+                <p class="text-sm md:text-base leading-relaxed italic text-zinc-500">
+                    "Zaman geriye akmaz. Bu ekrandan yansıyan soluk ışık ve şu anki düşüncen, evrenin bir daha asla okumayacağı tek satırlık bir koddur."
+                </p>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4 fade-in" style="animation-delay: 0.8s;" id="inputArea">
+            <p class="text-xs font-mono text-zinc-500 text-center">Bu ana ve senden sonrakilere bir not bırak. (Max 75 Karakter)</p>
+            <div class="relative group">
+                <textarea id="messageInput" rows="3" maxlength="75" placeholder="Boşluğa bir fısıltı bırak..." class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg p-4 text-sm text-zinc-300 font-light outline-none resize-none focus:border-zinc-600 transition duration-300 placeholder:text-zinc-700"></textarea>
+                
+                <div id="charCounter" class="absolute bottom-4 left-4 text-[10px] font-mono text-zinc-600">0 / 75</div>
+                
+                <button id="sendBtn" class="absolute bottom-4 right-4 text-xs font-mono text-zinc-500 hover:text-zinc-200 transition duration-300 cursor-pointer">GÖNDER &rarr;</button>
+            </div>
+        </div>
+
+        <div id="myMessageContainer" class="hidden fade-in flex flex-col gap-2 border border-zinc-800 bg-[#0a0a0a] p-4 rounded-lg relative">
+            <span class="text-[10px] font-mono text-zinc-500 tracking-widest uppercase">Senin Notun</span>
+            <p id="myMessageText" class="text-sm font-light italic text-zinc-300"></p>
+            <span id="myMessageTime" class="text-[11px] font-mono text-zinc-500 mt-2 self-end text-right"></span>
+            <button id="deleteBtn" class="absolute top-4 right-4 text-zinc-600 hover:text-red-500 transition duration-300" title="Mesajımı Sil">
+                <i class="fa-solid fa-trash-can text-sm"></i>
+            </button>
+        </div>
+
+        <div id="messageWall" class="space-y-8 mt-8 fade-in" style="animation-delay: 1.2s;"></div>
+
+        <div class="text-center mt-24 fade-in" style="animation-delay: 2s;">
+            <a href="javascript:window.close();" class="text-xs font-mono text-zinc-600 hover:text-zinc-300 transition duration-300">[ BOŞLUĞA DÖN ]</a>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy, serverTimestamp, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqXKzdLANynFgDCu9G0huLAnr4CQx_uH8",
+            authDomain: "ichi-go-ichi-e.firebaseapp.com",
+            projectId: "ichi-go-ichi-e",
+            storageBucket: "ichi-go-ichi-e.firebasestorage.app",
+            messagingSenderId: "608583165735",
+            appId: "1:608583165735:web:50d921155a372a398beb02"
+        };
+
+        const app = initializeApp(firebaseConfig);
+
+        const appCheck = initializeAppCheck(app, {
+            provider: new ReCaptchaV3Provider('6LdxaUYtAAAAAFp1vhT3W9F-kfZ58V4JBiEyT8hN'),
+            isTokenAutoRefreshEnabled: true
+        });
+
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUserUid = null;
+        signInAnonymously(auth).catch((error) => {
+            console.error("Kimlik doğrulama hatası:", error);
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserUid = user.uid;
+            }
+        });
+
+        const sendBtn = document.getElementById('sendBtn');
+        const messageInput = document.getElementById('messageInput');
+        const inputArea = document.getElementById('inputArea');
+        const myMessageContainer = document.getElementById('myMessageContainer');
+        const myMessageText = document.getElementById('myMessageText');
+        const myMessageTime = document.getElementById('myMessageTime');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const charCounter = document.getElementById('charCounter');
+        const messageWall = document.getElementById('messageWall');
+
+        messageInput.addEventListener('input', (e) => {
+            charCounter.textContent = `${e.target.value.length} / 75`;
+        });
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return "";
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const day = date.getDate();
+            
+            const months = [
+                "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", 
+                "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+            ];
+            const monthName = months[date.getMonth()];
+            const year = date.getFullYear();
+            
+            return `${hours}:${minutes} - ${day} ${monthName} ${year}`;
+        }
+
+        function validateAndFilter(input) {
+            const rawText = input.trim();
+            if (rawText === '') return { isValid: false, reason: "Boş veri." };
+
+            const allowedRegex = /^[a-zA-Z0-9çğıöşüÇİĞÖŞÜ\s.,]*$/;
+            if (!allowedRegex.test(rawText)) {
+                return { isValid: false, reason: "Güvenlik Protokolü: Sadece harf, sayı, nokta(.) ve virgül(,) kullanılabilir." };
+            }
+
+            let cleanText = rawText.normalize("NFC").toLocaleLowerCase('tr-TR')
+                .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g')
+                .replace(/ç/g, 'c').replace(/ü/g, 'u').replace(/ö/g, 'o');
+
+            const attackPayloads = [
+                "script", "onerror", "onload", "javascript", "alert", "prompt", "confirm",
+                "iframe", "svg", "body", "img", "onmouseover", "onfocus", "onclick", "onkeydown",
+                "document.cookie", "window.location", "eval", "settimeout", "setinterval",
+                "srcdoc", "href", "data:", "base64", "innerhtml",
+                "select", "drop", "insert", "delete", "union", "fetch", "exec", "update",
+                "truncate", "alter", "grant", "revoke", "information_schema", "sysdatabases",
+                "sysobjects", "version()", "database()", "user()", "pg_sleep", "delay",
+                "$gt", "$gte", "$lt", "$lte", "$ne", "$eq", "$regex", "$where", "$exists",
+                "../", "..\\", "/etc/passwd", "boot.ini", "cmd.exe", "powershell", "bash", 
+                "sh", "whoami", "uname", "cat ", "ping ", "curl ", "wget ", "chmod", "chown"
+            ];
+                                                                                                    
+            let hasPayload = attackPayloads.some(word => cleanText.includes(word));
+            if (hasPayload) {
+                return { isValid: false, reason: "Siber Güvenlik Engeli: Zararlı kod veya anahtar kelime algılandı." };
+            }
+
+            let phoneticText = cleanText.replace(/[^a-z]/g, ''); 
+            let meltedText = phoneticText.replace(/([a-z])\1+/g, '$1'); 
+
+            const strictProfanities = [
+                "orospucocugu", "orospu", "gavat", "deyyuz", "amk", "smk", "amcik", 
+                "gtooglan", "pezevenk", "siktir", "sikis", "pic", "oroscocugu", 
+                "orospucocgi", "oroscocgi"
+            ];
+            
+            let hasStrict = strictProfanities.some(badWord => phoneticText.includes(badWord) || meltedText.includes(badWord));
+            const heavyRegexPattern = /o+r+s+c+o+c+|o+r+o+s+b+u+|o+r+p+s+u+/;
+            
+            if (hasStrict || heavyRegexPattern.test(meltedText) || heavyRegexPattern.test(phoneticText)) {
+                return { isValid: false, reason: "Sistem Filtresi: Uygunsuz kelime algılandı." };
+            }
+
+            const contextualProfanities = ["sik"];
+            const wordsInText = cleanText.split(/[\s.,]+/);
+            let hasContextual = contextualProfanities.some(badWord => {
+                return wordsInText.some(userWord => {
+                    let meltedUserWord = userWord.replace(/([a-z])\1+/g, '$1');
+                    return userWord === badWord || meltedUserWord === badWord;
+                });
+            });
+
+            if (hasContextual) {
+                return { isValid: false, reason: "Sistem Filtresi: Uygunsuz kelime algılandı." };
+            }
+
+            return { isValid: true };
+        }
+
+        async function loadGlobalMessages() {
+            try {
+                const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                let allMessages = [];
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.text) {
+                        allMessages.push({
+                            text: data.text,
+                            timestamp: data.timestamp
+                        });
+                    }
+                });
+
+                allMessages.push({
+                    text: "Sessizlikte yankılanan en gürültülü şey düşüncelerimizdir.",
+                    timestamp: null 
+                });
+
+                messageWall.innerHTML = ''; 
+
+                allMessages.forEach((msg) => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'border-l border-zinc-800 pl-4 py-1 fade-in flex flex-col gap-1';
+                    
+                    const p = document.createElement('p');
+                    
+                    if (msg.timestamp === null) {
+                        p.className = 'text-sm font-light italic text-zinc-500';
+                    } else {
+                        p.className = 'text-sm font-light italic text-zinc-400';
+                    }
+                    p.textContent = `"${msg.text}"`;
+                    msgDiv.appendChild(p);
+                    
+                    if (msg.timestamp !== null) {
+                        const spanTime = document.createElement('span');
+                        spanTime.className = 'text-[11px] font-mono text-zinc-500 mt-1 self-end text-right';
+                        spanTime.textContent = formatTimestamp(msg.timestamp);
+                        msgDiv.appendChild(spanTime);
+                    }
+
+                    messageWall.appendChild(msgDiv);
+                });
+            } catch (error) {
+                console.log("Mesaj yükleme hatası:", error);
+            }
+        }
+
+        const savedMessage = localStorage.getItem('ichiMessage');
+        const savedTime = localStorage.getItem('ichiTime');
+        if (savedMessage) {
+            showMyMessage(savedMessage, savedTime || formatTimestamp(new Date()));
+        }
+        loadGlobalMessages();
+
+        async function handleSendMessage() {
+            if (!currentUserUid) {
+                alert("Sistem kimlik doğrulamanı henüz tamamlamadı, lütfen birkaç saniye bekle.");
+                return;
+            }
+
+            const text = messageInput.value;
+            const check = validateAndFilter(text);
+            
+            if (!check.isValid) {
+                alert(check.reason);
+                messageInput.value = '';
+                charCounter.textContent = "0 / 75";
+                return;
+            }
+
+            sendBtn.innerText = "İŞLENİYOR...";
+            sendBtn.style.pointerEvents = "none";
+
+            try {
+                const msgDocRef = doc(db, "messages", currentUserUid);
+                const msgDocSnap = await getDoc(msgDocRef);
+
+                if (msgDocSnap.exists()) {
+                    alert("Güvenlik Protokolü: Sistemde zaten sana ait bir fısıltı bulunuyor.");
+                    sendBtn.innerText = "GÖNDER \u2192";
+                    sendBtn.style.pointerEvents = "auto";
+                    return;
+                }
+
+                await setDoc(msgDocRef, {
+                    uid: currentUserUid,
+                    text: text.trim(),
+                    timestamp: serverTimestamp()
+                });
+
+                const nowStr = formatTimestamp(new Date());
+                localStorage.setItem('ichiMessage', text.trim());
+                localStorage.setItem('ichiTime', nowStr);
+                
+                showMyMessage(text.trim(), nowStr);
+                await loadGlobalMessages();
+
+            } catch (error) {
+                alert("Hata: Veritabanı bağlantısı kurulamadı veya yetkiniz yok.");
+                console.error(error);
+            } finally {
+                sendBtn.innerText = "GÖNDER \u2192";
+                sendBtn.style.pointerEvents = "auto";
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSendMessage);
+
+        deleteBtn.addEventListener('click', async () => {
+            if (!currentUserUid) return;
+            if(!confirm("Fısıltını sonsuz boşluktan tamamen silmek istediğine emin misin?")) return;
+
+            deleteBtn.style.pointerEvents = "none";
+            try {
+                await deleteDoc(doc(db, "messages", currentUserUid));
+
+                localStorage.removeItem('ichiMessage');
+                localStorage.removeItem('ichiTime');
+                myMessageContainer.classList.add('hidden');
+                inputArea.classList.remove('hidden');
+                messageInput.value = '';
+                charCounter.textContent = "0 / 75";
+                
+                await loadGlobalMessages();
+
+            } catch (error) {
+                alert("Mesaj silinirken hata oluştu.");
+                console.error(error);
+            } finally {
+                deleteBtn.style.pointerEvents = "auto";
+            }
+        });
+
+        function showMyMessage(text, timeStr) {
+            inputArea.classList.add('hidden');
+            myMessageText.textContent = `"${text}"`;
+            myMessageTime.textContent = timeStr;
+            myMessageContainer.classList.remove('hidden');
+        }
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

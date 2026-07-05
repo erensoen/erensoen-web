@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevLog // NÖBET</title>
+    <link rel="icon" type="image/svg+xml" href="resimler/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .grid-bg {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        }
+        
+        .devlog-card {
+            position: relative;
+        }
+
+        .devlog-card:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: -26px; 
+            top: 18px; 
+            bottom: calc(-3rem - 6px); 
+            width: 2px;
+            background-color: rgba(168, 85, 247, 0.3); 
+            z-index: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -31px; 
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            background-color: #0d1117;
+            border: 2px solid #a855f7;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .devlog-card:first-child .timeline-dot {
+            animation: pulse-glow 2s infinite;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 15px rgba(168, 85, 247, 0.9); }
+            50% { opacity: 0.6; transform: scale(0.85); box-shadow: 0 0 5px rgba(168, 85, 247, 0.3); }
+        }
+
+        #lightbox-img {
+            transition: transform 0.1s ease-out;
+            cursor: grab;
+        }
+        #lightbox-img:active {
+            cursor: grabbing;
+        }
+
+        /* YENİ: OTOMATİK AKILLI GRID SİSTEMİ */
+        .auto-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 4px; /* Resimler arası 1px boşluk */
+        }
+        /* İçindeki öğelerin varsayılan ayarları (en-boy oranı ve doldurma) */
+        .auto-grid > * {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            aspect-ratio: 16 / 9;
+        }
+        /* Eğer sadece 1 öğe varsa -> tam boy */
+        .auto-grid > *:first-child:nth-last-child(1) {
+            grid-column: span 2 / span 2;
+        }
+        /* Eğer tam 3 öğe varsa -> İLK öğeyi tam boy yap, diğerleri yarım kalsın */
+        .auto-grid > *:first-child:nth-last-child(3) {
+            grid-column: span 2 / span 2;
+        }
+    </style>
+</head>
+<body class="bg-[#0d1117] text-zinc-300 font-sans antialiased min-h-screen relative overflow-x-hidden selection:bg-purple-500 selection:text-white">
+
+    <div class="absolute inset-0 grid-bg z-0 pointer-events-none fixed"></div>
+
+    <div class="max-w-3xl mx-auto px-6 py-16 relative z-10">
+        
+        <header class="flex items-center justify-between border-b border-zinc-800 pb-6 mb-12">
+            <div class="flex flex-col gap-1">
+                <a href="ily.html" class="text-zinc-500 hover:text-white transition text-sm font-mono flex items-center gap-2 w-fit mb-2">
+                    <i class="fa-solid fa-arrow-left"></i> Main Node'a Dön
+                </a>
+                <h1 class="text-2xl font-medium text-white tracking-tight flex items-center gap-3">
+                    <span class="text-purple-500"><i class="fa-solid fa-ghost"></i></span>
+                    NÖBET // DevLog
+                </h1>
+                <p class="text-zinc-400 text-sm font-light">Geliştirme notları, krizler ve çözümler.</p>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 bg-[#161b22] border border-zinc-800 px-3 py-1.5 rounded-full text-[11px] font-mono text-zinc-300">
+                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+                <span>Active Log</span>
+            </div>
+        </header>
+
+        <main class="pl-8 flex flex-col gap-12 relative mt-4">
+
+            <article class="devlog-card">
+                <div class="timeline-dot"></div>
+                
+                <div class="border border-zinc-800 bg-[#161b22]/40 p-6 rounded-2xl backdrop-blur-sm hover:border-zinc-700 transition duration-300">
+                    <div class="flex flex-wrap justify-between items-start gap-4 mb-4 border-b border-zinc-800/60 pb-4">
+                        <time class="text-xs font-mono text-zinc-500 flex items-center gap-2">
+                            <i class="fa-regular fa-clock"></i> 04 Temmuz 2026 // 21:30
+                        </time>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">True FPS</span>
+                            <span class="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">Animation</span>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-medium text-white mb-3">Karakter Mekanikleri ve Gövde Görünümü</h2>
+                    <div class="text-zinc-400 text-sm font-light leading-relaxed space-y-4">
+                        <p>
+                            Karakterin temel hareketlerini (yürüme, koşma, eğilme ve zıplama) ayarladım. Ancak standart boş bir kamera yerine oyuncunun "orada" olduğunu hissetmesini istedim.
+                        </p>
+                        <p>
+                            Yere bakıldığında gövde, eller ve ayaklar tamamen görünüyor. Ayrıca yürüme ve eğilme efektlerini (headbob/kamera sallantısı) modele entegre ettim. Karakterin kendisini ve dinamik gölge dökümünü de ortama uygun şekilde ayarladım. Şimdilik hareket hissiyatı oldukça tok oldu.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-6 auto-grid rounded-xl overflow-hidden border border-zinc-800 bg-black">
+                        <img src="resimler/resim1.png" alt="Ekran Görüntüsü" class="devlog-img cursor-zoom-in hover:opacity-80 transition duration-300" data-gallery="gun-2">
+                        <img src="resimler/resim2.png" alt="Ekran Görüntüsü" class="devlog-img cursor-zoom-in hover:opacity-80 transition duration-300" data-gallery="gun-2">
+                    </div>
+                </div>
+            </article>
+
+            <article class="devlog-card">
+                <div class="timeline-dot"></div>
+                
+                <div class="border border-zinc-800 bg-[#161b22]/40 p-6 rounded-2xl backdrop-blur-sm hover:border-zinc-700 transition duration-300">
+                    <div class="flex flex-wrap justify-between items-start gap-4 mb-4 border-b border-zinc-800/60 pb-4">
+                        <time class="text-xs font-mono text-zinc-500 flex items-center gap-2">
+                            <i class="fa-regular fa-clock"></i> 03 Temmuz 2026 // 14:00
+                        </time>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] font-mono text-zinc-400 bg-zinc-500/10 px-2 py-0.5 rounded border border-zinc-500/20">Planning</span>
+                            <span class="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Story</span>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-medium text-white mb-3">Projenin Temelleri Atıldı: NÖBET</h2>
+                    <div class="text-zinc-400 text-sm font-light leading-relaxed space-y-4">
+                        <p>
+                            Bugün projeyi resmen açtım. Kodlamadan önce oyunun sadece kurgusuna odaklandım. Projenin hikayesini baştan sona yazdım ve olayların nasıl gelişeceğini, oyuncunun neleri deneyimleyeceğini planladım. İsim netleşti: <strong>NÖBET</strong>.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+        </main>
+
+        <footer class="mt-24 pt-6 border-t border-zinc-800 text-[11px] font-mono text-zinc-500 flex flex-col sm:flex-row justify-between gap-4">
+            <span>&copy; 2026 erensoen. Tüm Hakları Saklıdır.</span>
+            <span>Local Environment Log</span>
+        </footer>
+
+    </div>
+
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden flex-col justify-center items-center opacity-0 transition-opacity duration-300 backdrop-blur-sm select-none">
+        <button id="close-lightbox" class="absolute top-6 right-8 text-zinc-400 hover:text-white text-4xl transition duration-300 cursor-pointer z-50">&times;</button>
+        <button id="prev-btn" class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-4xl transition duration-300 cursor-pointer z-50"><i class="fa-solid fa-chevron-left"></i></button>
+        <button id="next-btn" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-4xl transition duration-300 cursor-pointer z-50"><i class="fa-solid fa-chevron-right"></i></button>
+        
+        <div id="img-container" class="w-full h-full flex items-center justify-center overflow-hidden">
+            <img id="lightbox-img" src="" class="max-w-[90vw] max-h-[90vh] rounded-lg shadow-2xl object-contain border border-zinc-800 pointer-events-auto">
+        </div>
+        
+        <div class="absolute bottom-6 text-zinc-500 font-mono text-xs z-50 bg-black/50 px-3 py-1 rounded">Scroll: Yakınlaştır | Sürükle: Gezin</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const videos = document.querySelectorAll('.devlog-video');
+            videos.forEach(video => {
+                video.volume = 0.05; // Artık 0.05 seviyesinde açılacak
+            });
+        });
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const imgContainer = document.getElementById('img-container');
+        const closeBtn = document.getElementById('close-lightbox');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        let currentGallery = [];
+        let currentIndex = 0;
+        
+        let scale = 1;
+        let isDragging = false;
+        let startX, startY, translateX = 0, translateY = 0;
+
+        document.querySelectorAll('.devlog-img').forEach(img => {
+            img.addEventListener('click', (e) => {
+                const galleryName = e.target.getAttribute('data-gallery');
+                
+                if (galleryName) {
+                    currentGallery = Array.from(document.querySelectorAll(`img[data-gallery="${galleryName}"]`));
+                    currentIndex = currentGallery.indexOf(e.target);
+                    if(currentGallery.length <= 1) {
+                        prevBtn.style.display = 'none';
+                        nextBtn.style.display = 'none';
+                    } else {
+                        prevBtn.style.display = 'block';
+                        nextBtn.style.display = 'block';
+                    }
+                } else {
+                    currentGallery = [e.target];
+                    currentIndex = 0;
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                }
+
+                showImage(currentGallery[currentIndex].src);
+                lightbox.classList.remove('hidden');
+                lightbox.classList.add('flex');
+                setTimeout(() => { lightbox.classList.remove('opacity-0'); }, 10);
+            });
+        });
+
+        function showImage(src) {
+            lightboxImg.src = src;
+            resetZoom();
+        }
+
+        function nextImage(e) {
+            if(e) e.stopPropagation();
+            if (currentGallery.length > 1) {
+                currentIndex = (currentIndex + 1) % currentGallery.length;
+                showImage(currentGallery[currentIndex].src);
+            }
+        }
+
+        function prevImage(e) {
+            if(e) e.stopPropagation();
+            if (currentGallery.length > 1) {
+                currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length;
+                showImage(currentGallery[currentIndex].src);
+            }
+        }
+
+        nextBtn.addEventListener('click', nextImage);
+        prevBtn.addEventListener('click', prevImage);
+
+        function closeLightbox() {
+            lightbox.classList.add('opacity-0');
+            setTimeout(() => { 
+                lightbox.classList.add('hidden'); 
+                lightbox.classList.remove('flex');
+                lightboxImg.src = ""; 
+                resetZoom();
+            }, 300);
+        }
+
+        closeBtn.addEventListener('click', closeLightbox);
+        
+        lightbox.addEventListener('click', (e) => {
+            if(e.target === lightbox || e.target === imgContainer) {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('hidden')) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') nextImage();
+                if (e.key === 'ArrowLeft') prevImage();
+            }
+        });
+
+        function applyTransform() {
+            lightboxImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        }
+
+        function resetZoom() {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+            applyTransform();
+        }
+
+        imgContainer.addEventListener('wheel', (e) => {
+            if (lightbox.classList.contains('hidden')) return;
+            e.preventDefault();
+            
+            const zoomSpeed = 0.1;
+            if (e.deltaY < 0) {
+                scale += zoomSpeed;
+            } else {
+                scale -= zoomSpeed;
+            }
+            
+            scale = Math.min(Math.max(1, scale), 5);
+            
+            if (scale === 1) {
+                translateX = 0;
+                translateY = 0;
+            }
+            applyTransform();
+        });
+
+        lightboxImg.addEventListener('mousedown', (e) => {
+            if (scale > 1) {
+                e.preventDefault();
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging && scale > 1) {
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                applyTransform();
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        lightboxImg.addEventListener('touchstart', (e) => {
+            if (scale > 1) {
+                isDragging = true;
+                startX = e.touches[0].clientX - translateX;
+                startY = e.touches[0].clientY - translateY;
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging && scale > 1) {
+                translateX = e.touches[0].clientX - startX;
+                translateY = e.touches[0].clientY - startY;
+                applyTransform();
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Error 418: I'm a teapot</title>
+    <link rel="icon" type="image/svg+xml" href="resimler/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #0d1117; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; }
+        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 10; opacity: 0.85; }
+        .grid-bg {
+            position: absolute; inset: 0; z-index: 15; pointer-events: none;
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        }
+        /* Slider Styling */
+        input[type=range] { -webkit-appearance: none; appearance: none; background: rgba(0, 255, 204, 0.2); height: 4px; border-radius: 2px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #00ffcc; cursor: pointer; }
+    </style>
+</head>
+<body class="relative flex items-center justify-center cursor-pointer overflow-hidden">
+
+    <div class="grid-bg"></div>
+
+    <div class="absolute left-6 top-6 flex flex-col gap-4 z-50 pointer-events-auto">
+        <div class="relative group flex items-center">
+            <button id="muteBtn" class="w-12 h-12 flex items-center justify-center text-[#00ffcc] bg-black/80 rounded-xl hover:bg-[#00ffcc]/20 transition border border-[#00ffcc]/30 shadow-[0_0_15px_rgba(0,255,204,0.1)]">
+                <i class="fas fa-volume-down"></i>
+            </button>
+            <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.03" class="absolute left-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-24">
+        </div>
+        <a href="https://github.com/erensoen" target="_blank" class="w-12 h-12 flex items-center justify-center text-[#00ffcc] bg-black/80 rounded-xl hover:bg-[#00ffcc]/20 transition border border-[#00ffcc]/30 shadow-[0_0_15px_rgba(0,255,204,0.1)]"><i class="fab fa-github text-lg"></i></a>
+        <a href="https://www.instagram.com/erensoen" target="_blank" class="w-12 h-12 flex items-center justify-center text-[#00ffcc] bg-black/80 rounded-xl hover:bg-[#00ffcc]/20 transition border border-[#00ffcc]/30 shadow-[0_0_15px_rgba(0,255,204,0.1)]"><i class="fab fa-instagram text-lg"></i></a>
+        <a href="https://x.com/erensoen" target="_blank" class="w-12 h-12 flex items-center justify-center text-[#00ffcc] bg-black/80 rounded-xl hover:bg-[#00ffcc]/20 transition border border-[#00ffcc]/30 shadow-[0_0_15px_rgba(0,255,204,0.1)]"><i class="fab fa-twitter text-lg"></i></a>
+        <a href="https://www.youtube.com/@erensoen" target="_blank" class="w-12 h-12 flex items-center justify-center text-[#00ffcc] bg-black/80 rounded-xl hover:bg-[#00ffcc]/20 transition border border-[#00ffcc]/30 shadow-[0_0_15px_rgba(0,255,204,0.1)]"><i class="fab fa-youtube text-lg"></i></a>
+        <a href="https://www.erensoen.com" target="_blank" class="w-12 h-12 flex items-center justify-center text-[#00ffcc] bg-black/80 rounded-xl hover:bg-[#00ffcc]/20 transition border border-[#00ffcc]/30 shadow-[0_0_15px_rgba(0,255,204,0.1)]"><i class="fas fa-globe text-lg"></i></a>
+    </div>
+
+    <div class="absolute left-6 bottom-6 z-50 pointer-events-none">
+        <p class="text-[#00ffcc]/60 font-mono text-xs tracking-wide shadow-black drop-shadow-md">
+            © 2026 erensoen. Tüm Hakları Saklıdır.
+        </p>
+    </div>
+
+    <div class="absolute right-6 bottom-6 z-50 pointer-events-auto">
+        <a href="mailto:erensoencontact@gmail.com" class="text-[#00ffcc] font-mono text-sm tracking-widest bg-black/80 px-6 py-3 border border-[#00ffcc]/30 rounded-xl hover:bg-[#00ffcc]/20 transition shadow-[0_0_15px_rgba(0,255,204,0.1)]">
+            [ CONTACT ]
+        </a>
+    </div>
+
+    <div id="click-prompt" class="absolute z-50 text-center pointer-events-none transition-opacity duration-500">
+        <p class="text-[#00ffcc] font-mono text-xs tracking-widest bg-black/80 px-6 py-3 border border-[#00ffcc]/30 rounded-xl animate-pulse">
+            [ CLICK ME / TIKLA ]
+        </p>
+    </div>
+
+    <canvas id="cinemaCanvas"></canvas>
+
+    <video id="trollVideo" autoplay loop playsinline muted>
+        <source id="videoSource" src="" type="video/mp4">
+    </video>
+
+    <script>
+        const video = document.getElementById('trollVideo');
+        const source = document.getElementById('videoSource');
+        const prompt = document.getElementById('click-prompt');
+        const volSlider = document.getElementById('volSlider');
+        const muteBtn = document.getElementById('muteBtn');
+        const muteIcon = muteBtn.querySelector('i');
+
+        source.src = Math.random() < 0.5 ? "videolar/video1.mp4" : "videolar/video2.mp4";
+        video.load(); 
+        video.volume = 0.03;
+
+        window.addEventListener('click', (e) => {
+            if (e.target.closest('.z-50') && e.target.id !== 'click-prompt') return;
+            
+            if (prompt.style.opacity !== '0') {
+                video.muted = false; 
+                video.play();        
+                prompt.style.opacity = '0'; 
+                if(video.volume > 0) muteIcon.className = 'fas fa-volume-down';
+            }
+        });
+
+        volSlider.addEventListener('input', (e) => {
+            video.volume = e.target.value;
+            if(video.volume === 0) {
+                video.muted = true;
+                muteIcon.className = 'fas fa-volume-mute';
+            } else {
+                video.muted = false;
+                muteIcon.className = video.volume > 0.5 ? 'fas fa-volume-up' : 'fas fa-volume-down';
+            }
+        });
+
+        muteBtn.addEventListener('click', () => {
+            if(video.muted || video.volume === 0) {
+                video.muted = false;
+                video.volume = volSlider.value > 0 ? volSlider.value : 0.03;
+                volSlider.value = video.volume;
+                muteIcon.className = video.volume > 0.5 ? 'fas fa-volume-up' : 'fas fa-volume-down';
+            } else {
+                video.muted = true;
+                muteIcon.className = 'fas fa-volume-mute';
+            }
+        });
+
+        const canvas = document.getElementById('cinemaCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const keywords = [
+            "eren soen", "TraceBack", "3D Horror Project",
+            "eren soen", "TraceBack", "3D Horror Project"
+        ];
+        const texts = keywords.map((txt, i) => ({
+            text: txt, x: Math.random() * (width - 250) + 100, y: Math.random() * (height * 0.25) + 60,
+            vx: (Math.random() - 0.5) * 1.2, vy: (Math.random() - 0.5) * 0.8, size: 16
+        }));
+
+        const birds = [
+            { x: -50, y: 80, speedX: 1.2, phase: 0 },
+            { x: -120, y: 130, speedX: 1.0, phase: 2 },
+            { x: -190, y: 90, speedX: 1.4, phase: 4 },
+            { x: -260, y: 110, speedX: 1.1, phase: 1 },
+            { x: -330, y: 70, speedX: 1.3, phase: 3 }
+        ];
+
+        function drawVectorMouse(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.ellipse(x, y, 10, 6, 0, 0, Math.PI * 2); ctx.fill(); 
+            ctx.beginPath(); ctx.arc(x + 11, y - 4, 5, 0, Math.PI * 2); ctx.fill(); 
+            ctx.beginPath(); ctx.arc(x + 9, y - 9, 3, 0, Math.PI * 2); ctx.fill(); 
+            
+            ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x + 13, y - 5, 1.2, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(x - 5, y + 5); ctx.lineTo(x - 5, y + 10); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + 5, y + 5); ctx.lineTo(x + 5, y + 10); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x - 10, y); ctx.quadraticCurveTo(x - 16, y + 2, x - 14, y - 6); ctx.stroke();
+            
+            ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.moveTo(x + 15, y - 4); ctx.lineTo(x + 20, y - 6); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + 15, y - 3); ctx.lineTo(x + 20, y - 2); ctx.stroke();
+        }
+
+        function drawVectorCat(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.ellipse(x, y, 18, 11, 0, 0, Math.PI * 2); ctx.fill(); 
+            ctx.beginPath(); ctx.arc(x + 15, y - 13, 9, 0, Math.PI * 2); ctx.fill(); 
+            ctx.beginPath();
+            ctx.moveTo(x + 8, y - 18); ctx.lineTo(x + 10, y - 26); ctx.lineTo(x + 15, y - 20);
+            ctx.moveTo(x + 15, y - 20); ctx.lineTo(x + 18, y - 26); ctx.lineTo(x + 21, y - 17); ctx.fill();
+            
+            ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x + 19, y - 15, 2, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#ef4444"; ctx.beginPath(); ctx.arc(x + 23, y - 11, 1.5, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(x - 10, y + 10); ctx.lineTo(x - 12, y + 18); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + 10, y + 10); ctx.lineTo(x + 12, y + 18); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x - 16, y); ctx.quadraticCurveTo(x - 24, y - 10, x - 20, y - 22); ctx.stroke();
+
+            ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(x + 22, y - 11); ctx.lineTo(x + 28, y - 13); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + 22, y - 10); ctx.lineTo(x + 28, y - 8); ctx.stroke();
+        }
+
+        function drawVectorDog(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.ellipse(x, y, 25, 15, 0, 0, Math.PI * 2); ctx.fill(); 
+            ctx.beginPath(); ctx.arc(x + 20, y - 16, 12, 0, Math.PI * 2); ctx.fill(); 
+            ctx.beginPath(); ctx.ellipse(x + 25, y - 12, 4, 9, -Math.PI / 6, 0, Math.PI * 2); ctx.fill(); 
+            
+            ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x + 24, y - 20, 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = "#111111"; ctx.beginPath(); ctx.arc(x + 31, y - 15, 2, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + 10, y - 14); ctx.lineTo(x + 15, y - 5); ctx.stroke();
+
+            ctx.strokeStyle = color; ctx.lineWidth = 3.5;
+            ctx.beginPath(); ctx.moveTo(x - 15, y + 13); ctx.lineTo(x - 18, y + 25); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + 15, y + 13); ctx.lineTo(x + 18, y + 25); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x - 22, y); ctx.quadraticCurveTo(x - 32, y - 8, x - 30, y - 2); ctx.stroke();
+        }
+
+        let mouse = { x: -50, speedX: 2.8 };
+        let cat = { x: -160, speedX: 2.8 };
+        let dog = { x: -280, speedX: 2.8 };
+
+        let timeline = 0;
+        let photoCount = 0;
+        let flashOpacity = 0;
+        let cxxState = "SHOOTING"; 
+        let cxxTimer = 0;
+        const photoInterval = 300; 
+
+        let fxElements = [];
+
+        function drawDroid(x, y, label, color, scale = 1, pose = {}) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            ctx.lineWidth = 5;
+            ctx.lineCap = "round";
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = color;
+
+            ctx.strokeStyle = color;
+            ctx.fillStyle = "#161b22";
+            ctx.beginPath();
+            
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            ctx.arc(0, -60, 18, 0, Math.PI * 2);
+            ctx.fill(); ctx.stroke();
+            ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px monospace"; ctx.shadowBlur = 0;
+            ctx.fillText(label, 0, -60);
+
+            ctx.strokeStyle = color; ctx.shadowBlur = 15;
+            ctx.beginPath(); ctx.moveTo(0, -40); ctx.lineTo(0, 0); ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(0, 0);
+            ctx.lineTo(-15 + (pose.leftLegX || 0), 25 + (pose.leftLegY || 0));
+            ctx.lineTo(-20 + (pose.leftFootX || 0), 50 + (pose.leftFootY || 0));
+            ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(0, 0);
+            ctx.lineTo(15 + (pose.rightLegX || 0), 25 + (pose.rightLegY || 0));
+            ctx.lineTo(20 + (pose.rightFootX || 0), 50 + (pose.rightFootY || 0));
+            ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(0, -30);
+            ctx.lineTo(-25 + (pose.leftArmX || 0), -15 + (pose.leftArmY || 0));
+            ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(0, -30);
+            ctx.lineTo(25 + (pose.rightArmX || 0), -15 + (pose.rightArmY || 0));
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function renderAnimationLoop() {
+            ctx.clearRect(0, 0, width, height);
+            timeline++;
+            
+            const groundY = height * 0.75;
+            const centerX = width / 2;
+            const cycle = timeline % 600; 
+
+            texts.forEach(t => {
+                ctx.save();
+                ctx.font = `bold ${t.size}px monospace`;
+                ctx.shadowBlur = 8; ctx.shadowColor = "rgba(99, 102, 241, 0.3)";
+                ctx.fillStyle = "rgba(226, 232, 240, 0.5)";
+                ctx.fillText(t.text, t.x, t.y);
+                ctx.restore();
+
+                t.x += t.vx; t.y += t.vy;
+                if (t.x < 50 || t.x > width - 200) t.vx *= -1;
+                if (t.y < 40 || t.y > height * 0.35) t.vy *= -1;
+            });
+
+            birds.forEach(b => {
+                b.x += b.speedX;
+                let flap = Math.sin(timeline * 0.15 + b.phase) * 8;
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.25)"; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(b.x, b.y + flap); ctx.lineTo(b.x + 10, b.y); ctx.lineTo(b.x + 20, b.y + flap); ctx.stroke();
+                if (b.x > width + 50) b.x = -50;
+            });
+
+            mouse.x += mouse.speedX;
+            cat.x += cat.speedX;
+            dog.x += dog.speedX;
+            let runBounce = Math.abs(Math.sin(timeline * 0.12)) * 5;
+            
+            drawVectorMouse(mouse.x, groundY + 45 - runBounce, "rgba(140, 140, 140, 0.6)");
+            drawVectorCat(cat.x, groundY + 40 - runBounce, "rgba(249, 115, 22, 0.6)");
+            drawVectorDog(dog.x, groundY + 36 - runBounce, "rgba(141, 110, 99, 0.6)");
+
+            if (dog.x > width + 120) {
+                mouse.x = -50; cat.x = -160; dog.x = -280;
+            }
+
+            let htmlX = centerX - 170;
+            let jsTargetX = htmlX - 100;
+            let jsX = 80;
+            let jsPose = {}; let htmlPose = {};
+            let flowerHolder = "JS";
+
+            if (cycle < 180) { 
+                jsX = 80 + (cycle / 180) * (jsTargetX - 80);
+                jsPose.leftLegY = Math.sin(timeline * 0.25) * 8;
+                jsPose.rightLegY = -Math.sin(timeline * 0.25) * 8;
+                jsPose.rightArmX = 10; jsPose.rightArmY = -15; 
+                flowerHolder = "JS";
+            } else if (cycle >= 180 && cycle < 230) { 
+                jsX = jsTargetX;
+                jsPose.rightArmX = 25; jsPose.rightArmY = -5; 
+                htmlPose.leftArmX = -25; htmlPose.leftArmY = -5; 
+                flowerHolder = "JS";
+            } else if (cycle >= 230 && cycle < 270) { 
+                jsX = jsTargetX;
+                jsPose.rightArmX = 0; jsPose.rightArmY = 0; 
+                htmlPose.leftArmX = -10; htmlPose.leftArmY = -35; 
+                flowerHolder = "HTML";
+            } else { 
+                jsX = jsTargetX;
+                let hop = Math.abs(Math.sin(timeline * 0.2)) * 15;
+                jsPose = { 
+                    leftLegY: hop, rightLegY: hop, 
+                    rightArmY: -10 + Math.sin(timeline * 0.3) * 10, 
+                    leftArmY: -10 - Math.sin(timeline * 0.3) * 10 
+                };
+                htmlPose = { 
+                    leftLegY: hop, rightLegY: hop, 
+                    leftArmX: -10, leftArmY: -35, 
+                    rightArmY: -10 + Math.sin(timeline * 0.3) * 10 
+                };
+                flowerHolder = "HTML";
+
+                if (timeline % 12 === 0 && Math.random() > 0.5) {
+                    fxElements.push({ x: htmlX - 35 + (Math.random() - 0.5) * 50, y: groundY - 60, type: "HEART", alpha: 1 });
+                }
+            }
+
+            drawDroid(jsX, groundY, "JS", "#facc15", 1, jsPose);
+            drawDroid(htmlX, groundY, "HTML", "#f97316", 1, htmlPose);
+
+            let roseBaseX, roseBaseY;
+            if (flowerHolder === "JS") {
+                roseBaseX = jsX + 25 + (jsPose.rightArmX || 0);
+                roseBaseY = groundY - 15 + (jsPose.rightArmY || 0);
+            } else {
+                roseBaseX = htmlX - 25 + (htmlPose.leftArmX || 0);
+                roseBaseY = groundY - 15 + (htmlPose.leftArmY || 0);
+            }
+
+            ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 3; 
+            ctx.beginPath(); ctx.moveTo(roseBaseX, roseBaseY + 5); ctx.lineTo(roseBaseX, roseBaseY - 16); ctx.stroke();
+
+            let roseTopX = roseBaseX;
+            let roseTopY = roseBaseY - 16;
+
+            ctx.fillStyle = "#22c55e"; 
+            ctx.beginPath(); ctx.ellipse(roseBaseX + 4, roseBaseY - 6, 4, 2, Math.PI/4, 0, Math.PI*2); ctx.fill();
+
+            ctx.fillStyle = "#ef4444";
+            
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.ellipse(roseTopX + Math.cos(i * 72 * Math.PI / 180) * 8, roseTopY + Math.sin(i * 72 * Math.PI / 180) * 8, 5, 8, i * 72 * Math.PI / 180, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.fillStyle = "#dc2626";
+            ctx.beginPath();
+            ctx.ellipse(roseTopX, roseTopY, 6, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+           
+            ctx.fillStyle = "#b91c1c";
+            ctx.beginPath();
+            ctx.ellipse(roseTopX, roseTopY, 3, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = "#991b1b"; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(roseTopX, roseTopY, 6, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(roseTopX, roseTopY, 3, -Math.PI / 4, Math.PI / 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(roseTopX, roseTopY, 2, Math.PI / 4, -Math.PI / 2); ctx.stroke();
+            
+            let csX = width - 230;
+            let csPose = {}; let unityPose = {};
+
+            if (cycle < 220) {
+                csX = (width - 230) - (cycle / 220) * (width - 230 - (centerX + 150));
+                csPose.leftLegY = Math.sin(timeline * 0.25) * 8;
+                csPose.rightLegY = -Math.sin(timeline * 0.25) * 8;
+            } else if (cycle >= 220 && cycle < 340) {
+                csX = centerX + 150;
+                
+                csPose.rightArmX = 15; csPose.rightArmY = -15; 
+
+                let ringX = csX + 40; 
+                let ringY = groundY - 30; 
+
+                ctx.strokeStyle = "#52525b"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(ringX, ringY, 6, 0, Math.PI * 2); ctx.stroke(); 
+                ctx.fillStyle = "#00ffff"; ctx.shadowColor = "#00ffff"; ctx.shadowBlur = 10;
+                ctx.beginPath(); ctx.arc(ringX, ringY - 6, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+            } else {
+                csX = centerX + 150;
+                let csHop = Math.abs(Math.sin(timeline * 0.2)) * 15;
+                csPose.leftLegY = csPose.rightLegY = csHop;
+                csPose.rightArmY = -30;
+
+                let uHop = Math.abs(Math.sin(timeline * 0.3)) * 25;
+                unityPose.leftLegY = unityPose.rightLegY = uHop; unityPose.leftArmY = -40;
+
+                ctx.font = "bold 16px monospace";
+                ctx.fillStyle = `rgba(0, 255, 204, ${0.6 + Math.sin(timeline * 0.2) * 0.4})`;
+                let textHop = Math.abs(Math.sin(timeline * 0.3)) * 8;
+                ctx.fillText("YES! YES!", centerX + 210, groundY - 110 - textHop);
+            }
+            drawDroid(csX, groundY, "C#", "#a855f7", 1, csPose);
+            drawDroid(centerX + 250, groundY, "Unity", "#ffffff", 1, unityPose);
+            
+            let cppX = width - 80;
+            let cppPose = {};
+
+            if (cxxState === "SHOOTING") {
+                cxxTimer++;
+                if (cxxTimer >= photoInterval) {
+                    cxxTimer = 0; photoCount++;
+                    if (photoCount <= 3) flashOpacity = 1.0; 
+                    if (photoCount === 3) { cxxState = "WAIT_FOR_4TH"; cxxTimer = 0; }
+                }
+                cppPose.leftArmX = -30; cppPose.leftArmY = -15;
+                
+                ctx.fillStyle = "#27272a"; ctx.fillRect(cppX - 45, groundY - 55, 22, 16);
+                ctx.fillStyle = "#09090b"; ctx.beginPath(); ctx.arc(cppX - 45, groundY - 47, 7, 0, Math.PI * 2); ctx.fill(); 
+                ctx.fillStyle = "#111111"; ctx.beginPath(); ctx.arc(cppX - 45, groundY - 47, 3, 0, Math.PI * 2); ctx.fill(); 
+                ctx.fillStyle = "#ef4444"; ctx.fillRect(cppX - 28, groundY - 53, 3, 3); 
+                ctx.fillStyle = "#71717a"; ctx.fillRect(cppX - 40, groundY - 62, 12, 7); 
+            }
+            else if (cxxState === "WAIT_FOR_4TH") {
+                cxxTimer++;
+                if (cxxTimer >= photoInterval) { cxxTimer = 0; cxxState = "TURNING"; }
+                cppPose.leftArmX = -30; cppPose.leftArmY = -15;
+            }
+            else if (cxxState === "TURNING") {
+                cxxTimer++; cppPose.leftArmY = 10;
+                if (cxxTimer > 40) { cxxState = "SNAP_USER"; cxxTimer = 0; }
+            }
+            else if (cxxState === "SNAP_USER") {
+                cxxTimer++;
+                cppPose.leftArmX = -5; cppPose.leftArmY = -45; 
+                cppPose.rightArmX = -30; cppPose.rightArmY = -35;
+
+                ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2; ctx.beginPath();
+                ctx.moveTo(cppX - 30, groundY - 65); ctx.lineTo(cppX - 80, groundY - 65); ctx.stroke(); 
+
+                ctx.fillStyle = "#27272a"; ctx.fillRect(cppX - 15, groundY - 85, 30, 22);
+                ctx.fillStyle = "#09090b"; ctx.beginPath(); ctx.arc(cppX, groundY - 74, 8, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#111111"; ctx.beginPath(); ctx.arc(cppX, groundY - 74, 4, 0, Math.PI * 2); ctx.fill();
+
+                if (cxxTimer === 30) flashOpacity = 1.0; 
+                if (cxxTimer > 60) { cxxState = "SHOW_PAPER"; cxxTimer = 0; }
+            }
+            else if (cxxState === "SHOW_PAPER") {
+                cxxTimer++; cppPose.leftArmX = -25; cppPose.leftArmY = -40;
+
+                ctx.fillStyle = "rgba(0, 255, 204, 0.95)";
+                ctx.shadowColor = "#00ffcc"; ctx.shadowBlur = 20;
+                ctx.fillRect(cppX - 170, groundY - 120, 140, 50); 
+                ctx.shadowBlur = 0;
+
+                ctx.font = "bold 13px monospace"; ctx.fillStyle = "#000000";
+                ctx.fillText("you look good <3", cppX - 162, groundY - 90); 
+
+                if (cxxTimer > 360) { 
+                    cxxState = "SHOOTING"; photoCount = 0; cxxTimer = 0;
+                }
+            }
+
+            drawDroid(cppX, groundY, "C++", "#ef4444", 1, cppPose);
+
+            fxElements.forEach((fx, index) => {
+                fx.y -= 1.2; fx.alpha -= 0.015;
+                if (fx.alpha <= 0) fxElements.splice(index, 1);
+                else {
+                    ctx.save(); ctx.globalAlpha = fx.alpha;
+                    ctx.font = "16px sans-serif"; ctx.fillStyle = "#22c55e"; ctx.fillText("❤", fx.x, fx.y);
+                    ctx.restore();
+                }
+            });
+
+            if (flashOpacity > 0) {
+                ctx.save();
+                let fX = (cxxState === "SNAP_USER") ? cppX : cppX - 35;
+                let fY = (cxxState === "SNAP_USER") ? groundY - 74 : groundY - 58;
+                
+                let lensFlashGrad = ctx.createRadialGradient(fX, fY, 10, fX, fY, 350 * flashOpacity);
+                lensFlashGrad.addColorStop(0, `rgba(255, 255, 255, ${flashOpacity})`);
+                lensFlashGrad.addColorStop(0.3, `rgba(212, 245, 255, ${flashOpacity * 0.8})`);
+                lensFlashGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                ctx.fillStyle = lensFlashGrad;
+                ctx.beginPath(); ctx.arc(fX, fY, 400, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+                
+                flashOpacity -= 0.025; 
+            }
+
+            requestAnimationFrame(renderAnimationLoop);
+        }
+
+        requestAnimationFrame(renderAnimationLoop);
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
