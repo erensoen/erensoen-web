@@ -225,9 +225,11 @@
                             Gelen kutum yeni fikirlere ve profesyonel iş birliklerine her zaman açık.
                         </p>
                     </div>
-                    <div class="max-w-xs">
-                        <a href="mailto:contact@erensoen.com" class="flex items-center justify-between border border-zinc-800 bg-[#161b22]/40 p-3 rounded-xl hover:border-zinc-600 hover:text-white transition group">
-                            <span class="text-xs font-mono text-zinc-300 group-hover:text-white transition">CONTACT</span>
+                    <div class="max-w-xs relative">
+                        <a href="mailto:contact@erensoen.com" 
+                           onclick="navigator.clipboard.writeText('contact@erensoen.com'); showCopyAlert();"
+                           class="flex items-center justify-between border border-zinc-800 bg-[#161b22]/40 p-3 rounded-xl hover:border-zinc-600 hover:text-white transition group">
+                            <span id="contact-text" class="text-xs font-mono text-zinc-300 group-hover:text-white transition">CONTACT</span>
                             <i class="fa-regular fa-envelope text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition duration-300 text-xs"></i>
                         </a>
                     </div>
@@ -262,9 +264,21 @@
             });
         });
 
-        // Burada video.html kısmını canlı siten için temiz URL'e uyarladım:
         function openFullscreenVideo() {
             window.open('/video', '_blank');
+        }
+
+        function showCopyAlert() {
+            const textSpan = document.getElementById('contact-text');
+            const originalText = textSpan.innerText;
+            
+            textSpan.innerText = "KOPYALANDI!";
+            textSpan.classList.add('text-emerald-400');
+            
+            setTimeout(() => {
+                textSpan.innerText = originalText;
+                textSpan.classList.remove('text-emerald-400');
+            }, 2000);
         }
     </script>
 </body>
