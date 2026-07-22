@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NÖBET</title>
+    <title>DevLog //NÖBET</title>
     <link rel="icon" type="image/svg+xml" href="resimler/favicon.svg">
    
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,11 +15,11 @@
                               linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
         }
         
-        .devlog-card {
+        .nobet-card {
             position: relative;
         }
 
-        .devlog-card:not(:last-child)::after {
+        .nobet-card:not(:last-child)::after {
             content: '';
             position: absolute;
             left: -26px; 
@@ -42,7 +42,7 @@
             z-index: 10;
         }
 
-        .devlog-card:first-child .timeline-dot {
+        .nobet-card:first-child .timeline-dot {
             animation: pulse-glow 2s infinite;
             box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
         }
@@ -108,7 +108,7 @@
 
         <main class="pl-8 flex flex-col gap-12 relative mt-4">
 
-            <article class="devlog-card">
+            <article class="nobet-card">
                 <div class="timeline-dot"></div>
                 
                 <div class="border border-zinc-800 bg-[#161b22]/40 p-6 rounded-2xl backdrop-blur-sm hover:border-zinc-700 transition duration-300">
@@ -132,13 +132,13 @@
                     </div>
                     
                     <div class="mt-6 auto-grid rounded-xl overflow-hidden border border-zinc-800 bg-black">
-                        <img src="resimler/resim1.png" alt="Ekran Görüntüsü" class="devlog-img cursor-zoom-in hover:opacity-80 transition duration-300" data-gallery="gun-2">
-                        <img src="resimler/resim2.png" alt="Ekran Görüntüsü" class="devlog-img cursor-zoom-in hover:opacity-80 transition duration-300" data-gallery="gun-2">
+                        <img src="resimler/resim1.png" alt="Ekran Görüntüsü" class="nobet-img cursor-zoom-in hover:opacity-80 transition duration-300" data-gallery="gun-2">
+                        <img src="resimler/resim2.png" alt="Ekran Görüntüsü" class="nobet-img cursor-zoom-in hover:opacity-80 transition duration-300" data-gallery="gun-2">
                     </div>
                 </div>
             </article>
 
-            <article class="devlog-card">
+            <article class="nobet-card">
                 <div class="timeline-dot"></div>
                 
                 <div class="border border-zinc-800 bg-[#161b22]/40 p-6 rounded-2xl backdrop-blur-sm hover:border-zinc-700 transition duration-300">
@@ -183,7 +183,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const videos = document.querySelectorAll('.devlog-video');
+            const videos = document.querySelectorAll('.nobet-video');
             videos.forEach(video => {
                 video.volume = 0.05; // Artık 0.05 seviyesinde açılacak
             });
@@ -203,7 +203,7 @@
         let isDragging = false;
         let startX, startY, translateX = 0, translateY = 0;
 
-        document.querySelectorAll('.devlog-img').forEach(img => {
+        document.querySelectorAll('.nobet-img').forEach(img => {
             img.addEventListener('click', (e) => {
                 const galleryName = e.target.getAttribute('data-gallery');
                 
