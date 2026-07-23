@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevLog //ESPANIGO</title>
     <link rel="icon" type="image/svg+xml" href="resimler/favicon.svg">
-   
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -93,7 +93,7 @@
             <div class="flex flex-col gap-1">
                 <a href="/" class="text-zinc-500 hover:text-white transition text-sm font-mono flex items-center gap-2 w-fit mb-2">
                     <i class="fa-solid fa-arrow-left"></i> Ana Ekrana Dön
-                        </a>
+                </a>
                 <h1 class="text-2xl font-medium text-white tracking-tight flex items-center gap-3">
                     <span class="text-purple-500"><i class="fa-solid fa-ghost"></i></span>
                     ESPANIGO // DevLog
@@ -108,6 +108,32 @@
 
         <main class="pl-8 flex flex-col gap-12 relative mt-4">
 
+            <!-- BUGÜNKÜ YENİ YAZI -->
+            <article class="espanigo-card">
+                <div class="timeline-dot"></div>
+                
+                <div class="border border-zinc-800 bg-[#161b22]/40 p-6 rounded-2xl backdrop-blur-sm hover:border-zinc-700 transition duration-300">
+                    <div class="flex flex-wrap justify-between items-start gap-4 mb-4 border-b border-zinc-800/60 pb-4">
+                        <time class="text-xs font-mono text-zinc-500 flex items-center gap-2">
+                            <i class="fa-regular fa-clock"></i> 23 Temmuz 2026 // 21:30
+                        </time>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">Architecture & Setup</span>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-medium text-white mb-3">Sistem Mimarisi ve 16 Adımlık Yol Haritası Netleşti</h2>
+                    <div class="text-zinc-400 text-sm font-light leading-relaxed space-y-4">
+                        <p>
+                            Bugün ESPANIGO'nun teknik altyapısını ve geliştirme ortamını tamamen kurguladık. Uygulamanın sıfır operasyonel maliyet ($0) ilkesine sadık kalarak local-first depolama (MMKV + Zustand), hile korumalı zaman hesabı (SystemClock) ve bellek sızıntılarını engelleyen anti-leak medya mimarisini tasarladık.
+                        </p>
+                        <p>
+                            Kodlama sürecinde AI ile pürüzsüz çalışabilmek adına projeyi 16 bağımsız adıma böldük. VS Code ve Android Studio emülatör ortamı entegre edildi, artık canlı canlı Hot Reload izleyerek ilk modülleri yazmaya hazırız.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ÖNCEKİ YAZI -->
             <article class="espanigo-card">
                 <div class="timeline-dot"></div>
                 
