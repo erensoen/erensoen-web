@@ -60,24 +60,24 @@
             cursor: grabbing;
         }
 
-        /* YENİ: OTOMATİK AKILLI GRID SİSTEMİ */
+       
         .auto-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 4px; /* Resimler arası 1px boşluk */
+            gap: 4px; 
         }
-        /* İçindeki öğelerin varsayılan ayarları (en-boy oranı ve doldurma) */
+       
         .auto-grid > * {
             width: 100%;
             height: 100%;
             object-fit: cover;
             aspect-ratio: 16 / 9;
         }
-        /* Eğer sadece 1 öğe varsa -> tam boy */
+        
         .auto-grid > *:first-child:nth-last-child(1) {
             grid-column: span 2 / span 2;
         }
-        /* Eğer tam 3 öğe varsa -> İLK öğeyi tam boy yap, diğerleri yarım kalsın */
+        
         .auto-grid > *:first-child:nth-last-child(3) {
             grid-column: span 2 / span 2;
         }
@@ -108,7 +108,35 @@
 
         <main class="pl-8 flex flex-col gap-12 relative mt-4">
 
-            <!-- BUGÜNKÜ YENİ YAZI -->
+            
+            <article class="espanigo-card">
+                <div class="timeline-dot"></div>
+                
+                <div class="border border-zinc-800 bg-[#161b22]/40 p-6 rounded-2xl backdrop-blur-sm hover:border-zinc-700 transition duration-300">
+                    <div class="flex flex-wrap justify-between items-start gap-4 mb-4 border-b border-zinc-800/60 pb-4">
+                        <time class="text-xs font-mono text-zinc-500 flex items-center gap-2">
+                            <i class="fa-regular fa-clock"></i> 26 Temmuz 2026 // 23:45
+                        </time>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">Native Modules & Crisis</span>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-medium text-white mb-3">Kurulumdan Native Köprülere: Uzun Bir Gün</h2>
+                    <div class="text-zinc-400 text-sm font-light leading-relaxed space-y-4">
+                        <p>
+                            Bugün gerçek anlamda sıfırdan başladım. Node, Java, Android SDK, telefon bağlantısı — hiçbiri kurulu değildi. Tek tek, adım adım her şeyi ayağa kaldırdım. Bu süreçte küçük bir gerçeği yeniden hatırladım: bir projeyi inşa etmeden önce, üzerine inşa edeceğin zemini kurmak da başlı başına bir emek. Kimse bunu görmüyor, kimse bunun için alkışlamıyor ama o zemin sağlam olmazsa üzerine hiçbir şey duramıyor.
+                        </p>
+                        <p>
+                            Gün ortasında ciddi bir krizle karşılaştım. Yerel depolama katmanını (MMKV) kurarken saatlerce çözemediğim, telefonu her build ettiğimde aynı hatayla karşılaştığım bir duvara tosladım. Denedim, temizledim, yeniden kurdum, yine aynı hata. Bir noktada gerçekten pes etmeyi düşündüm — bazen bir problem o kadar dirençli oluyor ki, çözümün kendisinden çok "acaba yanlış bir şey mi yapıyorum" diye kendini sorgulamaya başlıyorsun. Ama sonunda anladım ki sorun benim hatam değildi; kullandığım kütüphane, benim bildiğim eski yöntemi artık desteklemiyormuş, kuralları sessizce değiştirmiş. Kaynağı bulup doğru şekilde bağladığım anda, saatlerdir kilitli duran her şey tek seferde açıldı. Bazen çözüm, daha çok çabalamak değil, doğru soruyu sormakmış.
+                        </p>
+                        <p>
+                            O krizi aştıktan sonra gerisi bir akış haline geldi. Uygulamanın hafızasını (kalp, peso, seri, hata kumbarası, güçlendiriciler) yöneten beş ayrı motoru tek tek kurdum. Ardından Android'in kendi diline indim — cihazın saatini okuyan, reboot'ları tespit eden ve ileride ana ekran widget'ını besleyecek olan native köprüleri yazdım. Görünüşte hâlâ ekranda sadece renk değiştiren bir test sayfası var ama perde arkasında artık gerçek bir motor dönüyor. Uygulamanın da artık gerçek bir adı var: ESPANIGO.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            
             <article class="espanigo-card">
                 <div class="timeline-dot"></div>
                 
@@ -127,13 +155,13 @@
                             Tüm günü projenin arka planındaki mimari mantığı, veri akışını ve sistem sınırlarını baştan sona gözden geçirmeye ayırdım. Kodlamaya paldır küldür geçmeden önce kafamdaki tüm soru işaretlerini silmek ve ileride karşıma çıkabilecek mimari tıkanıklıkların önüne geçmek istedim. Uygulamanın veri depolama mantığından performans detaylarına kadar tüm kurguyu sağlam bir zemine oturttum. Temel sağlam olunca üzerine çıkılacak yapıyı inşa etmek her zaman daha pürüzsüz olur. Ne yapacağımı ve nasıl yapacağımı artık çok daha net biliyorum.
                         </p>
                         <p>
-                                Bu arada projenin ilk çıkış fikrini ve odağını da değiştirdim. İnsanlara karşılıksız fayda sağlayacak, sürdürülebilir bir şey inşa etmek bana asıl amacımı yeniden hatırlattı. Kadim bir Japon deyişinin söylediği gibi: <i>"Yanlış bir yolda ne kadar ilerlediğinin bir önemi yoktur; durduğun an, doğru noktadasın demektir."</i>
+                                Bu arada projenin ilk çıkış fikrini ve odağını da değiştirdim. İnsanlara karşılıksız fayda sağlayacak, sürdürülebilir bir şey inşa etmek bana asıl amacımı yeniden hatırlattı. Kadim bir Japon deyişinin söylediği gibi: <i>"Yanlış bir yolda ne kadar ilerlediğinin bir önemi yoktur; durduğun an, doğru noktadasın demektir."</i>
                         </p>
                     </div>
                 </div>
             </article>
 
-            <!-- ÖNCEKİ YAZI -->
+            
             <article class="espanigo-card">
                 <div class="timeline-dot"></div>
                 
@@ -180,7 +208,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const videos = document.querySelectorAll('.espanigo-video');
             videos.forEach(video => {
-                video.volume = 0.05; // Artık 0.05 seviyesinde açılacak
+                video.volume = 0.05; 
             });
         });
 
