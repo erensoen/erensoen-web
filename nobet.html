@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevLog //NÖBET</title>
+    <title>DevLog //YANKI</title>
     <link rel="icon" type="image/svg+xml" href="resimler/favicon.svg">
    
     <script src="https://cdn.tailwindcss.com"></script>
@@ -96,7 +96,7 @@
                         </a>
                 <h1 class="text-2xl font-medium text-white tracking-tight flex items-center gap-3">
                     <span class="text-purple-500"><i class="fa-solid fa-ghost"></i></span>
-                    NÖBET // DevLog
+                    YANKI // DevLog
                 </h1>
                 <p class="text-zinc-400 text-sm font-light">Geliştirme notları, krizler ve çözümler.</p>
             </div>
@@ -114,20 +114,20 @@
                 <div class="border border-zinc-800 bg-[#161b22]/40 p-6 rounded-2xl backdrop-blur-sm hover:border-zinc-700 transition duration-300">
                     <div class="flex flex-wrap justify-between items-start gap-4 mb-4 border-b border-zinc-800/60 pb-4">
                         <time class="text-xs font-mono text-zinc-500 flex items-center gap-2">
-                            <i class="fa-regular fa-clock"></i> 04 Temmuz 2026 // 21:30
+                            <i class="fa-regular fa-clock"></i> 07 Ağustos 2026 // 16:30
                         </time>
                         <div class="flex gap-2">
-                            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">True FPS</span>
-                            <span class="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">Animation</span>
+                            <span class="text-[10px] font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">True FPS</span>
+                            <span class="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">Atmosfer</span>
                         </div>
                     </div>
-                    <h2 class="text-lg font-medium text-white mb-3">Karakter Mekanikleri ve Gövde Görünümü</h2>
+                    <h2 class="text-lg font-medium text-white mb-3">Hareket ve Kamera Hissiyatı</h2>
                     <div class="text-zinc-400 text-sm font-light leading-relaxed space-y-4">
                         <p>
-                            Karakterin temel hareketlerini (yürüme, koşma, eğilme ve zıplama) ayarladım. Ancak standart boş bir kamera yerine oyuncunun "orada" olduğunu hissetmesini istedim.
+                            Karakterin temel hareketlerini (yürüme, koşma, eğilme) ve görüş sistemini tamamladım. Standart, havada süzülen "boş bir kamera" yerine oyuncunun gerçekten o bedenin içinde olduğunu hissettirmesini istedim. Bu yüzden kamera hareketlerine dinamik bir kafa sallantısı (headbob) ekledim. Yürüme, koşma ve durma durumları arasındaki geçişleri yumuşatarak oldukça tok ve gerçekçi bir hareket hissiyatı yakaladık.
                         </p>
                         <p>
-                            Yere bakıldığında gövde, eller ve ayaklar tamamen görünüyor. Ayrıca yürüme ve eğilme efektlerini (headbob/kamera sallantısı) modele entegre ettim. Karakterin kendisini ve dinamik gölge dökümünü de ortama uygun şekilde ayarladım. Şimdilik hareket hissiyatı oldukça tok oldu.
+                            Ayrıca oyuncunun çevreyle etkileşime girmesini sağlayacak Raycast tabanlı etkileşim sistemini, yumuşak kapı/çekmece açma mekaniklerini ve envanter altyapısını kurdum. Tüm bu sistemleri tek tıkla her sahneye aktarabileceğimiz Prefab yapılarına dönüştürerek oyunun teknik omurgasını sorunsuz şekilde tamamlamış olduk.
                         </p>
                     </div>
                     
@@ -151,10 +151,10 @@
                             <span class="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Story</span>
                         </div>
                     </div>
-                    <h2 class="text-lg font-medium text-white mb-3">Projenin Temelleri Atıldı: NÖBET</h2>
+                    <h2 class="text-lg font-medium text-white mb-3">Projenin Temelleri Atıldı: YANKI</h2>
                     <div class="text-zinc-400 text-sm font-light leading-relaxed space-y-4">
                         <p>
-                            Bugün projeyi resmen açtım. Kodlamadan önce oyunun sadece kurgusuna odaklandım. Projenin hikayesini baştan sona yazdım ve olayların nasıl gelişeceğini, oyuncunun neleri deneyimleyeceğini planladım. İsim netleşti: <strong>NÖBET</strong>.
+                            Bugün projeyi resmen açtım. Kodlamadan önce oyunun sadece kurgusuna odaklandım. Projenin hikayesini baştan sona yazdım ve olayların nasıl gelişeceğini, oyuncunun neleri deneyimleyeceğini planladım. İsim netleşti: <strong>YANKI</strong>.
                         </p>
                     </div>
                 </div>
