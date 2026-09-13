@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevLog //YANKI</title>
     <link rel="icon" type="image/svg+xml" href="resimler/favicon.svg">
-   
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -93,7 +93,7 @@
             <div class="flex flex-col gap-1">
                 <a href="/" class="text-zinc-500 hover:text-white transition text-sm font-mono flex items-center gap-2 w-fit mb-2">
                     <i class="fa-solid fa-arrow-left"></i> Ana Ekrana Dön
-                        </a>
+                </a>
                 <h1 class="text-2xl font-medium text-white tracking-tight flex items-center gap-3">
                     <span class="text-purple-500"><i class="fa-solid fa-ghost"></i></span>
                     YANKI // DevLog
@@ -107,6 +107,37 @@
         </header>
 
         <main class="pl-8 flex flex-col gap-12 relative mt-4">
+
+            <!-- YENİ GÜNCELLEME -->
+            <article class="nobet-card">
+                <div class="timeline-dot"></div>
+                
+                <div class="border border-zinc-800 bg-[#161b22]/40 p-6 rounded-2xl backdrop-blur-sm hover:border-zinc-700 transition duration-300">
+                    <div class="flex flex-wrap justify-between items-start gap-4 mb-4 border-b border-zinc-800/60 pb-4">
+                        <time class="text-xs font-mono text-zinc-500 flex items-center gap-2">
+                            <i class="fa-regular fa-clock"></i> 28 Ağustos 2026 // 19:15
+                        </time>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">Level Design</span>
+                            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Mekanikler</span>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-medium text-white mb-3">Greyboxing Sonu ve Temel Mekanik Entegrasyonu</h2>
+                    <div class="text-zinc-400 text-sm font-light leading-relaxed space-y-4">
+                        <p>
+                            Haritanın greyboxing (taslak mimari) aşamasını neredeyse tamamen tamamladık. Bölüm tasarımları ve mekânsal akış oturduktan sonra doğrudan ana oyun mekaniklerini bağlamaya geçtim.
+                        </p>
+                        <p>
+                            Oyuna atmosferik derinlik katacak el kamerası ve gece görüşü sistemini entegre ettim; buna bağlı çalışan pil yönetimi mekanizması da artık aktif. Ayrıca hikaye anlatımı için etkileşimli not okuma sistemini, kilitli alanlar için kapı/anahtar eşleşmelerini ve şifreli kilit mekanizmalarını sorunsuz şekilde sisteme dahil ettim.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-6 auto-grid rounded-xl overflow-hidden border border-zinc-800 bg-black">
+                        <img src="resimler/resim3.png" alt="Ekran Görüntüsü" class="nobet-img cursor-zoom-in hover:opacity-80 transition duration-300" data-gallery="gun-3">
+                        <img src="resimler/resim4.png" alt="Ekran Görüntüsü" class="nobet-img cursor-zoom-in hover:opacity-80 transition duration-300" data-gallery="gun-3">
+                    </div>
+                </div>
+            </article>
 
             <article class="nobet-card">
                 <div class="timeline-dot"></div>
